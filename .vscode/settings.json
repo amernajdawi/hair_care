@@ -1,0 +1,10 @@
+{
+    "cSpell.words": [
+        "Ollama",
+        "openai"
+    ],
+    "python.analysis.extraPaths": [
+        "./src/insights",
+        "./src/insights"
+    ]
+}
