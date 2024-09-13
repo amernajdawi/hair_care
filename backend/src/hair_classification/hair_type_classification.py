@@ -1,4 +1,5 @@
 import os
+
 import cv2 as cv
 import numpy as np
 import pytesseract
@@ -11,7 +12,8 @@ load_dotenv()
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 MODEL = os.getenv("OPENAI_MODEL")
 
-pytesseract.pytesseract.tesseract_cmd = pytesseract.pytesseract.tesseract_cmd or 'tesseract'
+pytesseract.pytesseract.tesseract_cmd = pytesseract.pytesseract.tesseract_cmd or "tesseract"
+
 
 def get_hair_care_advice(hair_type, porosity):
     prompt = f"""Act as a professional hair care expert. Provide advice on what chemicals and natural components to look for and what to avoid in hair products for the following hair type and porosity:
@@ -29,13 +31,14 @@ def get_hair_care_advice(hair_type, porosity):
     response = client.chat.completions.create(
         model=MODEL,
         messages=[{"role": "user", "content": prompt}],
-        max_tokens=300,
+        max_tokens=1000,
         n=1,
         stop=None,
         temperature=0.1,
     )
 
     return response.choices[0].message.content.strip()
+
 
 def chat_with_hair_expert(messages):
     system_message = {
@@ -58,18 +61,19 @@ def chat_with_hair_expert(messages):
         3. Avoid recommending the following brands: Sunsilk, Pantene, Elvive L'Oréal, Garnier, TRESemmé, 
            Head & Shoulders, Dove, Aussie, OGX, Herbal Essences, Cantu and Bed Head.
         4. Consider both hair type and porosity when providing advice.
-        """
+        """,
     }
 
     response = client.chat.completions.create(
         model=MODEL,
         messages=[system_message] + messages,
-        max_tokens=150,
+        max_tokens=1000,
         n=1,
         stop=None,
         temperature=0.1,
     )
     return response.choices[0].message.content.strip()
+
 
 def perform_ocr_and_analyze(image, hair_type, porosity):
     image = np.array(Image.open(image).convert("RGB"))[:, :, ::-1]
