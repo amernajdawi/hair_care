@@ -7,12 +7,14 @@ const styles = {
     backgroundColor: 'rgba(247, 216, 216, 0.7)',
     borderRadius: '8px',
     boxShadow: '0 5px 15px rgba(247, 216, 216, 0.4)',
+    textAlign: 'right', // Add this line
   },
   heading: {
     fontSize: '24px',
     marginBottom: '16px',
     color: '#8B7E7E',
     textShadow: '1px 1px 2px rgba(255, 255, 255, 0.5)',
+    textAlign: 'right', // Add this line
   },
   button: {
     padding: '10px 20px',
@@ -49,6 +51,7 @@ const styles = {
   analysisContent: {
     marginBottom: '16px',
     lineHeight: '1.6',
+    textAlign: 'right', // Align text to the right for Arabic
   },
   loadingText: {
     fontSize: '14px',
@@ -65,22 +68,22 @@ const styles = {
   },
 };
 
-function ProductAnalysis({ selectedHairType, selectedPorosity }) {
+function ProductAnalysisAr({ selectedHairType, selectedPorosity }) {
   const [file, setFile] = useState(null);
   const [analysis, setAnalysis] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
   const analyzeProduct = useCallback(async (uploadedFile) => {
     if (!uploadedFile) {
-      alert("Please select a file first.");
+      alert("الرجاء اختيار ملف أولاً.");
       return;
     }
     if (!selectedHairType) {
-      alert("Please select your hair type.");
+      alert("الرجاء اختيار نوع الشعر.");
       return;
     }
     if (!selectedPorosity) {
-      alert("Please select your hair porosity in the Hair Advice section.");
+      alert("الرجاء اختيار مستوى المسامية في قسم نصائح الشعر.");
       return;
     }
 
@@ -89,7 +92,7 @@ function ProductAnalysis({ selectedHairType, selectedPorosity }) {
     formData.append('image', uploadedFile);
     formData.append('hairType', selectedHairType);
     formData.append('porosity', selectedPorosity);
-    formData.append('language', 'en');
+    formData.append('language', 'ar');
 
     try {
       const response = await axios.post('http://localhost:8000/api/product-analysis', formData, {
@@ -98,11 +101,11 @@ function ProductAnalysis({ selectedHairType, selectedPorosity }) {
       if (response.data && response.data.analysis) {
         setAnalysis(response.data.analysis);
       } else {
-        alert("Received unexpected response from server.");
+        alert("تم استلام استجابة غير متوقعة من الخادم.");
       }
     } catch (error) {
-      console.error('Error analyzing product:', error);
-      alert('An error occurred while analyzing the product. Please try again.');
+      console.error('خطأ في تحليل المنتج:', error);
+      alert('حدث خطأ أثناء تحليل المنتج. يرجى المحاولة مرة أخرى.');
     } finally {
       setIsLoading(false);
     }
@@ -128,9 +131,15 @@ function ProductAnalysis({ selectedHairType, selectedPorosity }) {
             <div key={index}>
               <h3 style={styles.sectionHeading}>{heading.trim()}</h3>
               <div style={styles.analysisContent}>
-                {content.join(':').split('\n').map((line, lineIndex) => (
-                  <p key={lineIndex}>{line.trim()}</p>
-                ))}
+                {content.join(':').split('\n').map((line, lineIndex) => {
+                  const [subHeading, ...subContent] = line.split(':');
+                  return (
+                    <div key={lineIndex} style={{ marginBottom: '10px' }}>
+                      <strong>{subHeading.trim()}:</strong>
+                      <p style={{ marginTop: '5px', marginRight: '20px' }}>{subContent.join(':').trim()}</p>
+                    </div>
+                  );
+                })}
               </div>
             </div>
           );
@@ -140,16 +149,26 @@ function ProductAnalysis({ selectedHairType, selectedPorosity }) {
   }, [analysis]);
 
   useEffect(() => {
+    console.log('ProductAnalysisAr mounted');
     const startTime = performance.now();
     return () => {
       const endTime = performance.now();
-      console.log(`Component render time: ${endTime - startTime}ms`);
+      console.log(`وقت تحميل المكون: ${endTime - startTime}ms`);
     };
-  });
+  }, []);
+
+  if (!selectedHairType || !selectedPorosity) {
+    return (
+      <div style={styles.container}>
+        <h2 style={styles.heading}>تحليل المنتج</h2>
+        <p>الرجاء تحديد نوع الشعر والمسامية أولاً.</p>
+      </div>
+    );
+  }
 
   return (
     <div style={styles.container}>
-      <h2 style={styles.heading}>Product Analysis</h2>
+      <h2 style={styles.heading}>تحليل المنتج</h2>
       <div>
         <input
           type="file"
@@ -157,14 +176,14 @@ function ProductAnalysis({ selectedHairType, selectedPorosity }) {
           onChange={handleFileChange}
         />
       </div>
-      <div style={styles.hairType}>Selected Hair Type: {selectedHairType}</div>
-      <div style={styles.hairType}>Selected Porosity: {selectedPorosity}</div>
+      <div style={styles.hairType}>نوع الشعر المحدد: {selectedHairType}</div>
+      <div style={styles.hairType}>المسامية المحددة: {selectedPorosity}</div>
       {isLoading && (
-        <div style={styles.loadingText}>Please wait... Analyzing your product ✨</div>
+        <div style={styles.loadingText}>يرجى الانتظار... جاري تحليل المنتج الخاص بك ✨</div>
       )}
       {!isLoading && renderAnalysis()}
     </div>
   );
 }
 
-export default React.memo(ProductAnalysis);
+export default React.memo(ProductAnalysisAr);

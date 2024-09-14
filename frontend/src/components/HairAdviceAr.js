@@ -9,12 +9,14 @@ const styles = {
     backgroundColor: 'rgba(247, 216, 216, 0.7)',
     borderRadius: '8px',
     boxShadow: '0 5px 15px rgba(247, 216, 216, 0.4)',
+    textAlign: 'right', // Add this line
   },
   heading: {
     fontSize: '24px',
     marginBottom: '16px',
     color: '#8B7E7E',
     textShadow: '1px 1px 2px rgba(255, 255, 255, 0.5)',
+    textAlign: 'right', // Add this line
   },
   select: {
     width: '100%',
@@ -120,27 +122,28 @@ const styles = {
 const PLACEHOLDER_IMAGE = `${process.env.PUBLIC_URL}/images/placeholder.png`;
 
 const hairTypes = [
-  { name: "Type 1A", image: `${process.env.PUBLIC_URL}/images/TypeA1.png` },
-  { name: "Type 1B", image: `${process.env.PUBLIC_URL}/images/TypeB1.png` },
-  { name: "Type 1C", image: `${process.env.PUBLIC_URL}/images/TypeC1.png` },
-  { name: "Type 2A", image: `${process.env.PUBLIC_URL}/images/TypeA2.png` },
-  { name: "Type 2B", image: `${process.env.PUBLIC_URL}/images/TypeB2.png` },
-  { name: "Type 2C", image: `${process.env.PUBLIC_URL}/images/TypeC2.png` },
-  { name: "Type 3A", image: `${process.env.PUBLIC_URL}/images/TypeA3.png` },
-  { name: "Type 3B", image: `${process.env.PUBLIC_URL}/images/TypeB3.png` },
-  { name: "Type 3C", image: `${process.env.PUBLIC_URL}/images/TypeC3.png` },
-  { name: "Type 4A", image: `${process.env.PUBLIC_URL}/images/TypeA4.png` },
-  { name: "Type 4B", image: `${process.env.PUBLIC_URL}/images/TypeB4.png` },
-  { name: "Type 4C", image: `${process.env.PUBLIC_URL}/images/TypeC4.png` },
-];
+    { name: "Type 1A", image: `${process.env.PUBLIC_URL}/images/TypeA1.png` },
+    { name: "Type 1B", image: `${process.env.PUBLIC_URL}/images/TypeB1.png` },
+    { name: "Type 1C", image: `${process.env.PUBLIC_URL}/images/TypeC1.png` },
+    { name: "Type 2A", image: `${process.env.PUBLIC_URL}/images/TypeA2.png` },
+    { name: "Type 2B", image: `${process.env.PUBLIC_URL}/images/TypeB2.png` },
+    { name: "Type 2C", image: `${process.env.PUBLIC_URL}/images/TypeC2.png` },
+    { name: "Type 3A", image: `${process.env.PUBLIC_URL}/images/TypeA3.png` },
+    { name: "Type 3B", image: `${process.env.PUBLIC_URL}/images/TypeB3.png` },
+    { name: "Type 3C", image: `${process.env.PUBLIC_URL}/images/TypeC3.png` },
+    { name: "Type 4A", image: `${process.env.PUBLIC_URL}/images/TypeA4.png` },
+    { name: "Type 4B", image: `${process.env.PUBLIC_URL}/images/TypeB4.png` },
+    { name: "Type 4C", image: `${process.env.PUBLIC_URL}/images/TypeC4.png` },
+  ];
+  
 
-const porosityTypes = [
-  { name: 'High Porosity', image: `${process.env.PUBLIC_URL}/images/high_porosity.png` },
-  { name: 'Normal Porosity', image: `${process.env.PUBLIC_URL}/images/normal_porosity.png` },
-  { name: 'Low Porosity', image: `${process.env.PUBLIC_URL}/images/low_porosity.png` },
-];
+  const porosityTypes = [
+    { name: 'High Porosity', image: `${process.env.PUBLIC_URL}/images/high_porosity.png` },
+    { name: 'Normal Porosity', image: `${process.env.PUBLIC_URL}/images/normal_porosity.png` },
+    { name: 'Low Porosity', image: `${process.env.PUBLIC_URL}/images/low_porosity.png` },
+  ];
 
-function HairAdvice({ setSelectedHairType, setSelectedPorosity }) {
+function HairAdviceAr({ setSelectedHairType, setSelectedPorosity }) {
   const [hairType, setHairType] = useState('');
   const [porosity, setPorosity] = useState('');
   const [advice, setAdvice] = useState('');
@@ -149,7 +152,7 @@ function HairAdvice({ setSelectedHairType, setSelectedPorosity }) {
 
   const fetchHairAdvice = useCallback(async () => {
     if (!hairType || !porosity) {
-      setError('Please select both hair type and porosity before analysis.');
+      setError('الرجاء اختيار نوع الشعر ومساميته قبل التحليل.');
       return;
     }
 
@@ -160,7 +163,7 @@ function HairAdvice({ setSelectedHairType, setSelectedPorosity }) {
       const response = await axios.post('http://localhost:8000/api/hair-advice', {
         hairType,
         porosity,
-        language: 'en'  // Add this line
+        language: 'ar'  // Make sure this line is present
       });
 
       setAdvice(response.data.advice);
@@ -168,7 +171,7 @@ function HairAdvice({ setSelectedHairType, setSelectedPorosity }) {
       setSelectedPorosity(porosity);
     } catch (error) {
       console.error('Error fetching hair advice:', error);
-      setError('An error occurred while fetching advice. Please try again.');
+      setError('حدث خطأ أثناء جلب النصيحة. يرجى المحاولة مرة أخرى.');
     } finally {
       setIsLoading(false);
     }
@@ -223,7 +226,7 @@ function HairAdvice({ setSelectedHairType, setSelectedPorosity }) {
 
   return (
     <div style={styles.container}>
-      <h2 style={styles.heading}>Select Your Hair Type</h2>
+      <h2 style={styles.heading}>اختر نوع شعرك</h2>
       <div style={styles.buttonContainer}>
         {hairTypes.map((type) => (
           <button
@@ -246,7 +249,7 @@ function HairAdvice({ setSelectedHairType, setSelectedPorosity }) {
         ))}
       </div>
       
-      <h2 style={styles.heading}>Select Your Hair Porosity</h2>
+      <h2 style={styles.heading}>اختر مسامية شعرك</h2>
       <div style={styles.buttonContainer}>
         {porosityTypes.map((porosityType) => (
           <button
@@ -272,7 +275,7 @@ function HairAdvice({ setSelectedHairType, setSelectedPorosity }) {
       {error && <div style={styles.errorMessage}>{error}</div>}
       
       {isLoading ? (
-        <div style={styles.loadingText}>Please wait... Generating hair advice ✨</div>
+        <div style={styles.loadingText}>الرجاء الانتظار... جاري إنشاء نصائح للعناية بالشعر ✨</div>
       ) : (
         renderAdvice()
       )}
@@ -280,4 +283,4 @@ function HairAdvice({ setSelectedHairType, setSelectedPorosity }) {
   );
 }
 
-export default React.memo(HairAdvice);
+export default React.memo(HairAdviceAr);

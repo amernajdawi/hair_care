@@ -1,8 +1,12 @@
 import React, { useState } from 'react';
-import HairType from './components/HairAdvice';
-import CareAdvice from './components/Chat';
+import HairAdvice from './components/HairAdvice';
+import Chat from './components/Chat';
 import ProductAnalysis from './components/ProductAnalysis';
+import HairAdviceAr from './components/HairAdviceAr';
+import ChatAr from './components/ChatAr';
+import ProductAnalysisAr from './components/ProductAnalysisAr';
 import About from './components/About';
+import AboutAr from './components/AboutAr';
 
 const styles = {
   app: {
@@ -117,6 +121,15 @@ const styles = {
     textAlign: 'center',
     fontWeight: 'bold',
   },
+  languageButton: {
+    padding: '5px 10px',
+    backgroundColor: '#F7D8D8',
+    color: '#8B7E7E',
+    border: 'none',
+    borderRadius: '4px',
+    cursor: 'pointer',
+    marginLeft: '10px',
+  },
 };
 
 function App() {
@@ -124,6 +137,9 @@ function App() {
   const [selectedHairType, setSelectedHairType] = useState('');
   const [selectedPorosity, setSelectedPorosity] = useState('');
   const [showError, setShowError] = useState(false);
+  const [language, setLanguage] = useState('en');
+
+  console.log('App rendering', { page, selectedHairType, selectedPorosity, language });
 
   const handlePageChange = (newPage) => {
     if (newPage === 'About' || newPage === 'Hair Type' || (selectedHairType && selectedPorosity)) {
@@ -134,18 +150,28 @@ function App() {
     }
   };
 
-  const renderPage = () => {
+  const toggleLanguage = () => {
+    setLanguage(prevLang => prevLang === 'en' ? 'ar' : 'en');
+  };
+
+  const renderComponent = () => {
     switch (page) {
       case 'Hair Type':
-        return <HairType setSelectedHairType={setSelectedHairType} setSelectedPorosity={setSelectedPorosity} />;
-      case 'Care Advice':
-        return <CareAdvice selectedHairType={selectedHairType} selectedPorosity={selectedPorosity} />;
+        return language === 'en' 
+          ? <HairAdvice setSelectedHairType={setSelectedHairType} setSelectedPorosity={setSelectedPorosity} />
+          : <HairAdviceAr setSelectedHairType={setSelectedHairType} setSelectedPorosity={setSelectedPorosity} />;
+      case 'Care Advice':  // Changed from 'Chat' to 'Care Advice'
+        return language === 'en'
+          ? <Chat selectedHairType={selectedHairType} selectedPorosity={selectedPorosity} />
+          : <ChatAr selectedHairType={selectedHairType} selectedPorosity={selectedPorosity} />;
       case 'Product Analysis':
-        return <ProductAnalysis selectedHairType={selectedHairType} selectedPorosity={selectedPorosity} />;
+        return language === 'en'
+          ? <ProductAnalysis selectedHairType={selectedHairType} selectedPorosity={selectedPorosity} />
+          : <ProductAnalysisAr selectedHairType={selectedHairType} selectedPorosity={selectedPorosity} />;
       case 'About':
-        return <About />;
+        return language === 'en' ? <About /> : <AboutAr />;
       default:
-        return <HairType setSelectedHairType={setSelectedHairType} setSelectedPorosity={setSelectedPorosity} />;
+        return <div>Page not found</div>;
     }
   };
 
@@ -164,6 +190,9 @@ function App() {
           onClick={() => setPage('Hair Type')}
         />
         <span style={styles.subtitle}>Powered by AI Hair Care</span>
+        <button onClick={toggleLanguage} style={styles.languageButton}>
+          {language === 'en' ? 'العربية' : 'English'}
+        </button>
       </header>
 
       <main style={styles.main}>
@@ -205,7 +234,7 @@ function App() {
                   style={styles.navButtonIcon}
                 />
               )}
-              <span style={styles.navButtonText}>{item}</span>
+              <span style={styles.navButtonText}>{language === 'en' ? item : (item === 'Hair Type' ? 'نوع الشعر' : item === 'Care Advice' ? 'نصائح العناية' : item === 'Product Analysis' ? 'تحليل المنتج' : 'حول')}</span>
             </button>
           ))}
         </nav>
@@ -215,7 +244,7 @@ function App() {
               Please select your hair type and porosity before accessing other pages.
             </div>
           )}
-          {renderPage()}
+          {renderComponent()}
         </div>
       </main>
 

@@ -13,33 +13,8 @@ RUN npm install
 # Copy the frontend source code
 COPY frontend/ .
 
-# Clear npm cache and install dependencies
-RUN npm cache clean --force && \
-    npm config set loglevel verbose && \
-    (npm install --verbose \
-        @types/react@18.2.21 \
-        axios@1.5.0 \
-        @types/axios@0.14.0 \
-        react@18.2.0 \
-        react-dom@18.2.0 && \
-    npm list) || \
-    (echo "npm installation failed. Error log:" && \
-     cat /root/.npm/_logs/*-debug.log && \
-     exit 1)
-
-# Ensure the src directory exists and create a basic index.js if it doesn't exist
-RUN mkdir -p src && \
-    if [ ! -f src/index.js ]; then \
-    echo "import React from 'react';" > src/index.js && \
-    echo "import ReactDOM from 'react-dom/client';" >> src/index.js && \
-    echo "import App from './App';" >> src/index.js && \
-    echo "" >> src/index.js && \
-    echo "const root = ReactDOM.createRoot(document.getElementById('root'));" >> src/index.js && \
-    echo "root.render(<React.StrictMode><App /></React.StrictMode>);" >> src/index.js; \
-    fi
-
-# Set NODE_OPTIONS environment variable to use legacy OpenSSL provider
-ENV NODE_OPTIONS=--openssl-legacy-provider
+# Install react-lazy-load-image-component
+RUN npm install react-lazy-load-image-component
 
 # Build the frontend
 RUN npm run build
@@ -86,5 +61,15 @@ COPY --from=frontend /app/frontend/build /app/frontend/build
 # Expose the port the app runs on
 EXPOSE 8000
 
+# Install Tesseract OCR and Python packages
+RUN apt-get update && apt-get install -y \
+    tesseract-ocr \
+    ffmpeg \
+    libsm6 \
+    libxext6 \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN pip install pytesseract pillow opencv-python-headless
+
 # Start the backend server
-# CMD ["sh", "-c", "cd backend && poetry shell && poetry install && python api.py"]
+#CMD ["sh", "-c", "cd /app/backend && poetry shell && poetry install && python api.py"]
