@@ -168,6 +168,12 @@ function ChatAr({ selectedHairType, selectedPorosity }) {
     }
   };
 
+  const handleKeyPress = (e) => {
+    if (e.key === 'Enter') {
+      handleSubmit();
+    }
+  };
+
   return (
     <div style={styles.container}>
       <div style={styles.overlay}></div>
@@ -188,6 +194,7 @@ function ChatAr({ selectedHairType, selectedPorosity }) {
           style={styles.input}
           value={input}
           onChange={(e) => setInput(e.target.value)}
+          onKeyPress={handleKeyPress}
           placeholder="اكتب رسالتك هنا..."
           disabled={isLoading}
         />
