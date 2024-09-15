@@ -1,11 +1,3 @@
-# Specify the Cloud Build service account (if you're using a custom one)
-# If you're using the default Cloud Build service account, you can omit this
-# serviceAccount: 'projects/$PROJECT_ID/serviceAccounts/your-service-account@$PROJECT_ID.iam.gserviceaccount.com'
-
-# Specify logging behavior
-options:
-  logging: CLOUD_LOGGING_ONLY
-
 steps:
 # Build and push frontend image
 - name: 'gcr.io/cloud-builders/docker'
@@ -19,22 +11,45 @@ steps:
 - name: 'gcr.io/cloud-builders/docker'
   args: ['push', 'gcr.io/$PROJECT_ID/backend:$COMMIT_SHA']
 
-# Update the docker-compose.yml file with the new image tags
-- name: 'gcr.io/cloud-builders/gcloud'
-  entrypoint: 'bash'
+# Deploy backend to Cloud Run
+- name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+  entrypoint: gcloud
+  args:
+  - 'run'
+  - 'deploy'
+  - 'backend'
+  - '--image'
+  - 'gcr.io/$PROJECT_ID/backend:$COMMIT_SHA'
+  - '--region'
+  - 'us-central1'
+  - '--platform'
+  - 'managed'
+  - '--allow-unauthenticated'
+
+# Get the URL of the backend service
+- name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+  entrypoint: /bin/sh
   args:
   - '-c'
   - |
-    sed -i 's|build:|image: gcr.io/$PROJECT_ID/frontend:$COMMIT_SHA|' docker-compose.yml
-    sed -i '/context:/d' docker-compose.yml
-    sed -i '/dockerfile:/d' docker-compose.yml
-    sed -i 's|build:|image: gcr.io/$PROJECT_ID/backend:$COMMIT_SHA|' docker-compose.yml
+    echo "REACT_APP_API_URL=https://$(gcloud run services describe backend --format='value(status.url)' --region=us-central1)" > frontend/.env
 
-# Deploy using docker-compose
-- name: 'docker/compose'
-  args: ['-f', 'docker-compose.yml', 'up', '-d']
-
-# Optional: Run any tests or additional deployment steps here
+# Deploy frontend to Cloud Run
+- name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+  entrypoint: gcloud
+  args:
+  - 'run'
+  - 'deploy'
+  - 'frontend'
+  - '--image'
+  - 'gcr.io/$PROJECT_ID/frontend:$COMMIT_SHA'
+  - '--region'
+  - 'us-central1'
+  - '--platform'
+  - 'managed'
+  - '--allow-unauthenticated'
+  - '--set-env-vars'
+  - 'REACT_APP_API_URL=https://$(gcloud run services describe backend --format='value(status.url)' --region=us-central1)'
 
 images:
 - 'gcr.io/$PROJECT_ID/frontend:$COMMIT_SHA'
