@@ -1,5 +1,6 @@
 import logging
 import traceback
+import os
 
 from flask import Flask, jsonify, request
 from flask_cors import CORS
@@ -12,7 +13,7 @@ from src.hair_classification.hair_type_classification import (
 logging.basicConfig(level=logging.DEBUG)
 
 app = Flask(__name__)
-CORS(app)
+CORS(app, resources={r"/api/*": {"origins": "*"}})
 
 
 @app.route("/api/hair-advice", methods=["POST"])

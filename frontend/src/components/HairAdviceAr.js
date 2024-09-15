@@ -117,6 +117,19 @@ const styles = {
     '50%': { opacity: 1 },
     '100%': { opacity: 0.6 },
   },
+  acceptButton: {
+    padding: '12px 24px',
+    backgroundColor: '#F7D8D8',
+    color: '#8B7E7E',
+    border: 'none',
+    borderRadius: '4px',
+    cursor: 'pointer',
+    transition: 'background-color 0.3s',
+    boxShadow: '0 2px 4px rgba(232, 180, 184, 0.3)',
+    fontSize: '16px',
+    fontWeight: 'bold',
+    marginTop: '20px',
+  },
 };
 
 const PLACEHOLDER_IMAGE = `${process.env.PUBLIC_URL}/images/placeholder.png`;
@@ -224,6 +237,14 @@ function HairAdviceAr({ setSelectedHairType, setSelectedPorosity }) {
     );
   }, [advice]);
 
+  const handleAcceptAndGetAdvice = useCallback(() => {
+    if (hairType && porosity) {
+      fetchHairAdvice();
+    } else {
+      setError('الرجاء اختيار نوع الشعر ومساميته قبل الحصول على النصيحة.');
+    }
+  }, [hairType, porosity, fetchHairAdvice]);
+
   return (
     <div style={styles.container}>
       <h2 style={styles.heading}>اختر نوع شعرك</h2>
@@ -271,6 +292,13 @@ function HairAdviceAr({ setSelectedHairType, setSelectedPorosity }) {
           </button>
         ))}
       </div>
+      
+      <button 
+        onClick={handleAcceptAndGetAdvice}
+        style={styles.acceptButton}
+      >
+        قبول والحصول على النصيحة
+      </button>
       
       {error && <div style={styles.errorMessage}>{error}</div>}
       

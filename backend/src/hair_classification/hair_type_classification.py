@@ -28,6 +28,14 @@ def get_hair_care_advice(hair_type, porosity, language="en"):
     2. Chemicals and components to avoid
     3. General care tips for this hair type and porosity
 
+    For each recommended chemical or natural component, please specify:
+    - The recommended amount to use
+    - How frequently it should be used
+
+    If you suggest protein treatments or products, please mention that overuse of protein may be harmful and explain why.
+
+    Ensure that all answers to my questions come from reputable sources in the field of hair care and trichology.
+
     Advice:"""
 
     messages = [

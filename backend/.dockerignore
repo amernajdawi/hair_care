@@ -1,0 +1,10 @@
+.venv
+.vscode
+__pycache
+.git
+node_modules
+dist
+.git
+**/node_modules
+**/venv
+**/__pycache__

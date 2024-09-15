@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
+const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000';
+
 const styles = {
   container: {
     padding: '20px',
@@ -150,7 +152,7 @@ function ChatAr({ selectedHairType, selectedPorosity }) {
     console.log('Sending request with language:', 'ar');
 
     try {
-      const response = await axios.post('http://localhost:8000/api/chat', { 
+      const response = await axios.post(`${API_URL}/api/chat`, { 
         messages: newMessages,
         hairType: selectedHairType,
         porosity: selectedPorosity,

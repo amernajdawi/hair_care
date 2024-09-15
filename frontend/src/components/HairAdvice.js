@@ -115,6 +115,19 @@ const styles = {
     '50%': { opacity: 1 },
     '100%': { opacity: 0.6 },
   },
+  acceptButton: {
+    padding: '12px 24px',
+    backgroundColor: '#F7D8D8',
+    color: '#8B7E7E',
+    border: 'none',
+    borderRadius: '4px',
+    cursor: 'pointer',
+    transition: 'background-color 0.3s',
+    boxShadow: '0 2px 4px rgba(232, 180, 184, 0.3)',
+    fontSize: '16px',
+    fontWeight: 'bold',
+    marginTop: '20px',
+  },
 };
 
 const PLACEHOLDER_IMAGE = `${process.env.PUBLIC_URL}/images/placeholder.png`;
@@ -196,6 +209,14 @@ function HairAdvice({ setSelectedHairType, setSelectedPorosity }) {
     e.target.onerror = null;
   }, []);
 
+  const handleAcceptAndGetAdvice = useCallback(() => {
+    if (hairType && porosity) {
+      fetchHairAdvice();
+    } else {
+      setError('Please select both hair type and porosity before getting advice.');
+    }
+  }, [hairType, porosity, fetchHairAdvice]);
+
   const renderAdvice = useCallback(() => {
     if (!advice) return null;
     
@@ -268,6 +289,13 @@ function HairAdvice({ setSelectedHairType, setSelectedPorosity }) {
           </button>
         ))}
       </div>
+      
+      <button 
+        onClick={handleAcceptAndGetAdvice}
+        style={styles.acceptButton}
+      >
+        Accept and Get Advice
+      </button>
       
       {error && <div style={styles.errorMessage}>{error}</div>}
       

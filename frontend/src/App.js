@@ -234,7 +234,7 @@ function App() {
                   style={styles.navButtonIcon}
                 />
               )}
-              <span style={styles.navButtonText}>{language === 'en' ? item : (item === 'Hair Type' ? 'نوع الشعر' : item === 'Care Advice' ? 'نصائح العناية' : item === 'Product Analysis' ? 'تحليل المنتج' : 'حول')}</span>
+              <span style={styles.navButtonText}>{language === 'en' ? item : (item === 'Hair Type' ? 'نوع الشعر' : item === 'Care Advice' ? 'نصائح العناية' : item === 'Product Analysis' ? 'تحليل المنتج' : 'About')}</span>
             </button>
           ))}
         </nav>

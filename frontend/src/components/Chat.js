@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
+const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000';
+
 const styles = {
   container: {
     padding: '20px',
@@ -142,10 +144,15 @@ function Chat({ selectedHairType, selectedPorosity }) {
     setError(null);
 
     try {
-      const response = await axios.post('http://localhost:8000/api/chat', { 
+      const response = await axios.post(`${API_URL}/api/chat`, { 
         messages: newMessages,
         hairType: selectedHairType,
         porosity: selectedPorosity
+      }, {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        withCredentials: false,
       });
       let assistantMessage = response.data.response || '';
       setMessages([...newMessages, { role: 'assistant', content: assistantMessage }]);
@@ -154,6 +161,13 @@ function Chat({ selectedHairType, selectedPorosity }) {
       setError(`An error occurred: ${error.message}`);
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      handleSubmit();
     }
   };
 
@@ -177,6 +191,7 @@ function Chat({ selectedHairType, selectedPorosity }) {
           style={styles.input}
           value={input}
           onChange={(e) => setInput(e.target.value)}
+          onKeyDown={handleKeyDown}
           placeholder="Type your message..."
           disabled={isLoading}
         />
