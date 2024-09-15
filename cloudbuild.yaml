@@ -1,5 +1,33 @@
 steps:
-- name: 'docker/compose:1.26.2'
-  args: ['up', '-d']
-options:
-  logging: CLOUD_LOGGING_ONLY
+# Build and push frontend image
+- name: 'gcr.io/cloud-builders/docker'
+  args: ['build', '-t', 'gcr.io/$PROJECT_ID/frontend:$COMMIT_SHA', './frontend']
+- name: 'gcr.io/cloud-builders/docker'
+  args: ['push', 'gcr.io/$PROJECT_ID/frontend:$COMMIT_SHA']
+
+# Build and push backend image
+- name: 'gcr.io/cloud-builders/docker'
+  args: ['build', '-t', 'gcr.io/$PROJECT_ID/backend:$COMMIT_SHA', './backend']
+- name: 'gcr.io/cloud-builders/docker'
+  args: ['push', 'gcr.io/$PROJECT_ID/backend:$COMMIT_SHA']
+
+# Update the docker-compose.yml file with the new image tags
+- name: 'gcr.io/cloud-builders/gcloud'
+  entrypoint: 'bash'
+  args:
+  - '-c'
+  - |
+    sed -i 's|build:|image: gcr.io/$PROJECT_ID/frontend:$COMMIT_SHA|' docker-compose.yml
+    sed -i '/context:/d' docker-compose.yml
+    sed -i '/dockerfile:/d' docker-compose.yml
+    sed -i 's|build:|image: gcr.io/$PROJECT_ID/backend:$COMMIT_SHA|' docker-compose.yml
+
+# Deploy using docker-compose
+- name: 'docker/compose'
+  args: ['-f', 'docker-compose.yml', 'up', '-d']
+
+# Optional: Run any tests or additional deployment steps here
+
+images:
+- 'gcr.io/$PROJECT_ID/frontend:$COMMIT_SHA'
+- 'gcr.io/$PROJECT_ID/backend:$COMMIT_SHA'
