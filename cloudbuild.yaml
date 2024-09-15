@@ -49,7 +49,7 @@ steps:
   - 'managed'
   - '--allow-unauthenticated'
   - '--set-env-vars'
-  - 'REACT_APP_API_URL=https://$(gcloud run services describe backend --format='value(status.url)' --region=us-central1)'
+  - 'REACT_APP_API_URL=https://$(gcloud run services describe backend --format="value(status.url)" --region=us-central1)'
 
 images:
 - 'gcr.io/$PROJECT_ID/frontend:$COMMIT_SHA'
