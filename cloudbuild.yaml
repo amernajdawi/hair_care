@@ -1,3 +1,11 @@
+# Specify the Cloud Build service account (if you're using a custom one)
+# If you're using the default Cloud Build service account, you can omit this
+# serviceAccount: 'projects/$PROJECT_ID/serviceAccounts/your-service-account@$PROJECT_ID.iam.gserviceaccount.com'
+
+# Specify logging behavior
+options:
+  logging: CLOUD_LOGGING_ONLY
+
 steps:
 # Build and push frontend image
 - name: 'gcr.io/cloud-builders/docker'
