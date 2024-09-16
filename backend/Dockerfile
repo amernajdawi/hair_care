@@ -43,5 +43,8 @@ RUN pip install gunicorn
 # Expose the port the app runs on
 EXPOSE 8080
 
+# Print directory contents and list Python files
+RUN ls -la && find . -name "*.py"
+
 # Start the backend server using gunicorn
-CMD ["gunicorn", "--bind", "0.0.0.0:8080", "api:app"]
+CMD ["gunicorn", "--bind", "0.0.0.0:8080", "api:app", "--log-level", "debug"]

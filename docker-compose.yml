@@ -45,6 +45,9 @@ steps:
   - '--cpu=1'
   - '--memory=512Mi'
   - '--timeout=300'
+  - '--set-env-vars=PYTHONUNBUFFERED=1'
+  - '--health-checks=/health'
+  - '--health-check-interval=1m'
 
 substitutions:
   _REGION: us-central1  # default region, can be overridden
