@@ -38,7 +38,7 @@ RUN apt-get update && apt-get install -y \
 RUN pip install pytesseract pillow opencv-python-headless
 
 # Expose the port the app runs on
-EXPOSE 8000
+EXPOSE 8080
 
 # Start the backend server
 CMD ["python", "api.py"]
