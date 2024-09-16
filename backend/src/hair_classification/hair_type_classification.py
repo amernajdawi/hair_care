@@ -21,7 +21,7 @@ def get_hair_care_advice(hair_type, porosity, language="en"):
     prompt = f"""Act as a professional hair care expert. Provide advice on what chemicals and natural components to look for and what to avoid in hair products for the following hair type and porosity:
 
     Hair Type: {hair_type}
-    Hair Porosity: {porosity}
+    Hair Porosity: {porosity} 
 
     Please include:
     1. Recommended chemicals and natural components
