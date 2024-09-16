@@ -7,14 +7,13 @@ from dotenv import load_dotenv
 from openai import OpenAI
 from PIL import Image
 
+# Load environment variables from .env file
 load_dotenv()
 
 print("Debug: All environment variables:")
 print(os.environ)
 
 api_key = os.getenv("OPENAI_API_KEY")
-print(f"Debug: OPENAI_API_KEY is set to: {api_key}")
-
 if not api_key:
     raise ValueError("OPENAI_API_KEY environment variable is not set")
 
