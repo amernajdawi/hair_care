@@ -37,8 +37,11 @@ RUN apt-get update && apt-get install -y \
 
 RUN pip install pytesseract pillow opencv-python-headless
 
+# Install gunicorn
+RUN pip install gunicorn
+
 # Expose the port the app runs on
 EXPOSE 8080
 
-# Start the backend server
-CMD ["python", "api.py"]
+# Start the backend server using gunicorn
+CMD ["gunicorn", "--bind", "0.0.0.0:8080", "api:app"]

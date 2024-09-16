@@ -42,6 +42,9 @@ steps:
   - '--allow-unauthenticated'
   - '--set-env-vars'
   - 'PORT=8080'
+  - '--cpu=1'
+  - '--memory=512Mi'
+  - '--timeout=300'
 
 substitutions:
   _REGION: us-central1  # default region, can be overridden
