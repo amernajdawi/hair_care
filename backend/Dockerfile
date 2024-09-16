@@ -46,5 +46,8 @@ EXPOSE 8080
 # Print directory contents and list Python files
 RUN ls -la && find . -name "*.py"
 
+# Print environment variables for debugging (remove in production)
+RUN echo "OPENAI_API_KEY is set to: $OPENAI_API_KEY"
+
 # Start the backend server using gunicorn
 CMD ["gunicorn", "--bind", "0.0.0.0:8080", "api:app", "--log-level", "debug"]
