@@ -49,11 +49,5 @@ RUN ls -la && find . -name "*.py"
 # Print environment variables for debugging
 RUN env | sort
 
-# Copy the .env file
-COPY .env .env
-
-# Install python-dotenv
-RUN pip install python-dotenv
-
 # Start the backend server using gunicorn
 CMD ["gunicorn", "--bind", "0.0.0.0:8080", "api:app", "--log-level", "debug"]

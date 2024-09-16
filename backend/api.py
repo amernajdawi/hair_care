@@ -1,7 +1,6 @@
 import logging
 import traceback
 import os
-from dotenv import load_dotenv
 
 from flask import Flask, jsonify, request
 from flask_cors import CORS
@@ -10,9 +9,6 @@ from src.hair_classification.hair_type_classification import (
     get_hair_care_advice,
     perform_ocr_and_analyze,
 )
-
-# Load environment variables from .env file
-load_dotenv()
 
 logging.basicConfig(level=logging.DEBUG)
 

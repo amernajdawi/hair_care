@@ -41,7 +41,7 @@ steps:
   - 'managed'
   - '--allow-unauthenticated'
   - '--set-env-vars'
-  - 'PORT=8080'
+  - 'PORT=8080,OPENAI_API_KEY=${_OPENAI_API_KEY}'
   - '--cpu=1'
   - '--memory=512Mi'
   - '--timeout=300'
@@ -51,6 +51,7 @@ steps:
 
 substitutions:
   _REGION: us-central1  # default region, can be overridden
+  _OPENAI_API_KEY: sk-None-hagED548ji7s9aezpN8wT3BlbkFJS7CKkECH4jhqB0w0Liay # Replace with your actual OpenAI API key
 
 options:
   logging: CLOUD_LOGGING_ONLY
