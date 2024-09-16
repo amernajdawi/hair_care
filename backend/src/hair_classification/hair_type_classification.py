@@ -6,9 +6,6 @@ if not api_key:
     raise ValueError("OPENAI_API_KEY environment variable is not set")
 
 client = OpenAI(api_key=api_key)
-
-# ... (rest of your existing functions)
-
 def get_hair_care_advice(hair_type, porosity, language="en"):
     print(f"get_hair_care_advice called with language: {language}")  # Debug print
 

@@ -1,42 +1,27 @@
-steps:
-# Build and push frontend image
-- name: 'gcr.io/cloud-builders/docker'
-  args: ['build', '-t', 'gcr.io/$PROJECT_ID/frontend:$SHORT_SHA', './frontend']
-- name: 'gcr.io/cloud-builders/docker'
-  args: ['push', 'gcr.io/$PROJECT_ID/frontend:$SHORT_SHA']
-
-# Build and push backend image
-- name: 'gcr.io/cloud-builders/docker'
-  args: ['build', '-t', 'gcr.io/$PROJECT_ID/backend:$SHORT_SHA', './backend']
-- name: 'gcr.io/cloud-builders/docker'
-  args: ['push', 'gcr.io/$PROJECT_ID/backend:$SHORT_SHA']
-
-# Deploy backend to Cloud Run
-- name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
-  entrypoint: gcloud
-  args:
-  - 'run'
-  - 'deploy'
-  - 'backend'
-  - '--image'
-  - 'gcr.io/$PROJECT_ID/backend:$SHORT_SHA'
-  - '--region'
-  - '${_REGION}'
-  - '--platform'
-  - 'managed'
-  - '--allow-unauthenticated'
-  - '--set-env-vars'
-  - 'PORT=8080,OPENAI_API_KEY=${_OPENAI_API_KEY}'
-  - '--cpu=1'
-  - '--memory=512Mi'
-  - '--timeout=300'
-  - '--set-env-vars=PYTHONUNBUFFERED=1'
-  - '--health-checks=/health'
-  - '--health-check-interval=1m'
-
-substitutions:
-  _REGION: us-central1  # default region, can be overridden
-  _OPENAI_API_KEY: sk-None-hagED548ji7s9aezpN8wT3BlbkFJS7CKkECH4jhqB0w0Liay # Replace with your actual OpenAI API key
-
-options:
-  logging: CLOUD_LOGGING_ONLY
+version: '3.8'
+services:
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+    environment:
+      - REACT_APP_API_URL=http://localhost:8000
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend:/app
+    environment:
+      - FLASK_ENV=development
+      - FLASK_APP=api.py
+      
+networks:
+  default:
+    driver: bridge
