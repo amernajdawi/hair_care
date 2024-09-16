@@ -11,21 +11,6 @@ steps:
 - name: 'gcr.io/cloud-builders/docker'
   args: ['push', 'gcr.io/$PROJECT_ID/backend:$SHORT_SHA']
 
-# Deploy frontend to Cloud Run
-- name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
-  entrypoint: gcloud
-  args:
-  - 'run'
-  - 'deploy'
-  - 'frontend'
-  - '--image'
-  - 'gcr.io/$PROJECT_ID/frontend:$SHORT_SHA'
-  - '--region'
-  - '${_REGION}'
-  - '--platform'
-  - 'managed'
-  - '--allow-unauthenticated'
-
 # Deploy backend to Cloud Run
 - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
   entrypoint: gcloud

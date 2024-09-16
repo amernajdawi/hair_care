@@ -53,9 +53,7 @@ def product_analysis():
         analysis = perform_ocr_and_analyze(image, hair_type, porosity, language)
         return jsonify({"analysis": analysis})
     except Exception as e:
-        logging.error(f"Error in product_analysis endpoint: {str(e)}")
-        logging.error(traceback.format_exc())
-        return jsonify({"error": str(e)}), 500
+        return jsonify({"error": "An error occurred during product analysis"}), 500
 
 
 @app.route("/health", methods=["GET"])

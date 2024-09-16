@@ -1,23 +1,13 @@
 import os
-
-import cv2 as cv
-import numpy as np
-import pytesseract
-from dotenv import load_dotenv
 from openai import OpenAI
-from PIL import Image
-
-load_dotenv()
 
 api_key = os.getenv("OPENAI_API_KEY")
 if not api_key:
     raise ValueError("OPENAI_API_KEY environment variable is not set")
 
 client = OpenAI(api_key=api_key)
-MODEL = os.getenv("OPENAI_MODEL")
 
-pytesseract.pytesseract.tesseract_cmd = pytesseract.pytesseract.tesseract_cmd or "tesseract"
-
+# ... (rest of your existing functions)
 
 def get_hair_care_advice(hair_type, porosity, language="en"):
     print(f"get_hair_care_advice called with language: {language}")  # Debug print
