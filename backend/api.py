@@ -18,9 +18,14 @@ CORS(app, resources={r"/api/*": {"origins": "*"}})
 
 @app.route("/api/hair-advice", methods=["POST"])
 def hair_advice():
-    data = request.json
-    advice = get_hair_care_advice(data["hairType"], data["porosity"], data["language"])
-    return jsonify({"advice": advice})
+    try:
+        data = request.json
+        advice = get_hair_care_advice(data["hairType"], data["porosity"], data["language"])
+        return jsonify({"advice": advice})
+    except Exception as e:
+        logging.error(f"Error in hair_advice endpoint: {str(e)}")
+        logging.error(traceback.format_exc())
+        return jsonify({"error": str(e)}), 500
 
 
 @app.route("/api/chat", methods=["POST"])
@@ -48,7 +53,9 @@ def product_analysis():
         analysis = perform_ocr_and_analyze(image, hair_type, porosity, language)
         return jsonify({"analysis": analysis})
     except Exception as e:
-        return jsonify({"error": "An error occurred during product analysis"}), 500
+        logging.error(f"Error in product_analysis endpoint: {str(e)}")
+        logging.error(traceback.format_exc())
+        return jsonify({"error": str(e)}), 500
 
 
 @app.route("/health", methods=["GET"])
