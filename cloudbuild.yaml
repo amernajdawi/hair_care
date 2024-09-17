@@ -30,7 +30,7 @@ steps:
   - 'managed'
   - '--allow-unauthenticated'
   - '--set-env-vars'
-  - 'OPENAI_MODEL=gpt-4-mini,OPENAI_API_KEY=sk-None-hagED548ji7s9aezpN8wT3BlbkFJS7CKkECH4jhqB0w0Liay'
+  - 'OPENAI_MODEL=gpt-4-mini,OPENAI_API_KEY=${_OPENAI_API_KEY}'
 
 # Get the URL of the backend service
 - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
