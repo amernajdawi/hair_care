@@ -1,28 +1,32 @@
 # Use a multi-stage build for smaller final image
-FROM node:18-alpine AS build
+FROM node:18-alpine as build
 
-# Set the working directory for the frontend
+# Set the working directory
 WORKDIR /app
 
-# Copy package.json and package-lock.json (if available)
+# Copy package.json and package-lock.json
 COPY package*.json ./
+
+# Install dependencies
 RUN npm ci
 
-# Copy the frontend source code
+# Copy the rest of the code
 COPY . .
+
+# Build the app
 RUN npm run build
 
-# Use nginx to serve the built static files
+# Use nginx to serve the static files
 FROM nginx:alpine
 
-# Copy the built static files from the build stage
+# Copy the build output to replace the default nginx contents.
 COPY --from=build /app/build /usr/share/nginx/html
 
 # Copy the nginx configuration
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
-# Expose the port the frontend will run on (adjust if necessary)
+# Expose port 8080
 EXPOSE 8080
 
-# Start the frontend application using nginx
+# Start nginx
 CMD ["nginx", "-g", "daemon off;"]
