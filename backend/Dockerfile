@@ -34,4 +34,4 @@ RUN pip install pytesseract pillow opencv-python-headless
 EXPOSE 8080
 
 # Start the backend server
-CMD ["python", "api.py"]
+CMD ["gunicorn", "--bind", "0.0.0.0:8080", "api:app"]
