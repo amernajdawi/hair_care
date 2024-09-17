@@ -9,8 +9,10 @@ from PIL import Image
 
 load_dotenv()
 
-client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
-MODEL = os.getenv("OPENAI_MODEL")
+client = OpenAI(api_key="sk-None-hagED548ji7s9aezpN8wT3BlbkFJS7CKkECH4jhqB0w0Liay")
+# client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+# MODEL = os.getenv("OPENAI_MODEL")
+MODEL = "gpt-4o-mini"
 
 pytesseract.pytesseract.tesseract_cmd = pytesseract.pytesseract.tesseract_cmd or "tesseract"
 
