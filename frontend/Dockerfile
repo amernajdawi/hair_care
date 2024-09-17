@@ -1,29 +1,28 @@
-# Use an official Node runtime as the base image for the frontend
-FROM node:18-alpine
+# Use a multi-stage build for smaller final image
+FROM node:18-alpine AS build
 
 # Set the working directory for the frontend
 WORKDIR /app
 
 # Copy package.json and package-lock.json (if available)
 COPY package*.json ./
-
-# Install all dependencies (including dev dependencies)
-RUN npm install
+RUN npm ci
 
 # Copy the frontend source code
 COPY . .
-
-# Install react-lazy-load-image-component
-RUN npm install react-lazy-load-image-component
-
-# Set the environment variable for the API URL
-ENV REACT_APP_API_URL=http://backend:8000
-
-# Build the frontend
 RUN npm run build
 
-# Expose the port the frontend will run on (adjust if necessary)
-EXPOSE 3000
+# Use nginx to serve the built static files
+FROM nginx:alpine
 
-# Start the frontend application
-CMD ["npm", "start"]
+# Copy the built static files from the build stage
+COPY --from=build /app/build /usr/share/nginx/html
+
+# Copy the nginx configuration
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+
+# Expose the port the frontend will run on (adjust if necessary)
+EXPOSE 8080
+
+# Start the frontend application using nginx
+CMD ["nginx", "-g", "daemon off;"]
