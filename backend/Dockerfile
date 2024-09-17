@@ -10,13 +10,6 @@ RUN pip install --no-cache-dir poetry==1.4.2 \
     && apt-get install -y --no-install-recommends gcc libpq-dev \
     && rm -rf /var/lib/apt/lists/*
 
-# Install Node.js and npm
-RUN apt-get update && apt-get install -y curl && \
-    curl -fsSL https://deb.nodesource.com/setup_18.x | bash - && \
-    apt-get install -y nodejs && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
-
 # Install ffmpeg and related libraries
 RUN apt-get update && apt-get install ffmpeg libsm6 libxext6 -y
 
@@ -37,17 +30,8 @@ RUN apt-get update && apt-get install -y \
 
 RUN pip install pytesseract pillow opencv-python-headless
 
-# Install gunicorn
-RUN pip install gunicorn
-
 # Expose the port the app runs on
 EXPOSE 8080
 
-# Print directory contents and list Python files
-RUN ls -la && find . -name "*.py"
-
-# Print environment variables for debugging
-RUN printenv
-
-# Start the backend server using gunicorn
-CMD ["gunicorn", "--bind", "0.0.0.0:8080", "api:app", "--log-level", "debug"]
+# Start the backend server
+CMD ["python", "api.py"]

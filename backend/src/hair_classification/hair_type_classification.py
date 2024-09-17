@@ -1,18 +1,27 @@
 import os
+
+import cv2 as cv
+import numpy as np
+import pytesseract
+from dotenv import load_dotenv
 from openai import OpenAI
+from PIL import Image
 
-api_key = os.getenv("OPENAI_API_KEY")
-if not api_key:
-    raise ValueError("OPENAI_API_KEY environment variable is not set")
+load_dotenv()
 
-client = OpenAI(api_key=api_key)
+client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+MODEL = os.getenv("OPENAI_MODEL")
+
+pytesseract.pytesseract.tesseract_cmd = pytesseract.pytesseract.tesseract_cmd or "tesseract"
+
+
 def get_hair_care_advice(hair_type, porosity, language="en"):
     print(f"get_hair_care_advice called with language: {language}")  # Debug print
 
     prompt = f"""Act as a professional hair care expert. Provide advice on what chemicals and natural components to look for and what to avoid in hair products for the following hair type and porosity:
 
     Hair Type: {hair_type}
-    Hair Porosity: {porosity} 
+    Hair Porosity: {porosity}
 
     Please include:
     1. Recommended chemicals and natural components
@@ -49,13 +58,16 @@ def get_hair_care_advice(hair_type, porosity, language="en"):
     return response.choices[0].message.content.strip()
 
 
-def chat_with_hair_expert(messages, language="en"):
-    print(f"chat_with_hair_expert called with language: {language}")  # Debug print
+def chat_with_hair_expert(messages, hair_type, porosity, language="en"):
+    print(f"chat_with_hair_expert called with language: {language}, hair_type: {hair_type}, porosity: {porosity}")  # Debug print
 
     system_message = {
         "role": "system",
         "content": f"""
         You are a professional hair care expert. Always respond in {'Arabic' if language == 'ar' else 'English'}.
+        
+        Hair Type: {hair_type}
+        Hair Porosity: {porosity}
         
         Recommended brands for analysis and suggestions:
         - ALASEEL
@@ -72,6 +84,7 @@ def chat_with_hair_expert(messages, language="en"):
         3. Avoid recommending the following brands: Sunsilk, Pantene, Elvive L'Oréal, Garnier, TRESemmé, 
            Head & Shoulders, Dove, Aussie, OGX, Herbal Essences, Cantu and Bed Head.
         4. Consider both hair type and porosity when providing advice.
+        5. Tailor your responses specifically to the given hair type and porosity.
         """,
     }
 

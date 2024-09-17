@@ -3,6 +3,8 @@ import axios from 'axios';
 import { LazyLoadImage } from 'react-lazy-load-image-component';
 import 'react-lazy-load-image-component/src/effects/blur.css';
 
+const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:8080';
+
 const styles = {
   container: {
     padding: '20px',
@@ -170,7 +172,7 @@ function HairAdvice({ setSelectedHairType, setSelectedPorosity }) {
     setError('');
 
     try {
-      const response = await axios.post('http://localhost:8000/api/hair-advice', {
+      const response = await axios.post(`${API_URL}/api/hair-advice`, { 
         hairType,
         porosity,
         language: 'en'  // Add this line

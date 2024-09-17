@@ -1,6 +1,8 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import axios from 'axios';
 
+const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:8080';
+
 const styles = {
   container: {
     padding: '20px',
@@ -92,7 +94,7 @@ function ProductAnalysis({ selectedHairType, selectedPorosity }) {
     formData.append('language', 'en');
 
     try {
-      const response = await axios.post('http://localhost:8000/api/product-analysis', formData, {
+      const response = await axios.post(`${API_URL}/api/product-analysis`, formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
       if (response.data && response.data.analysis) {

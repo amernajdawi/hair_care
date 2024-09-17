@@ -1,6 +1,5 @@
 import logging
 import traceback
-import os
 
 from flask import Flask, jsonify, request
 from flask_cors import CORS
@@ -13,19 +12,14 @@ from src.hair_classification.hair_type_classification import (
 logging.basicConfig(level=logging.DEBUG)
 
 app = Flask(__name__)
-CORS(app, resources={r"/api/*": {"origins": "*"}})
+CORS(app)
 
 
 @app.route("/api/hair-advice", methods=["POST"])
 def hair_advice():
-    try:
-        data = request.json
-        advice = get_hair_care_advice(data["hairType"], data["porosity"], data["language"])
-        return jsonify({"advice": advice})
-    except Exception as e:
-        logging.error(f"Error in hair_advice endpoint: {str(e)}")
-        logging.error(traceback.format_exc())
-        return jsonify({"error": str(e)}), 500
+    data = request.json
+    advice = get_hair_care_advice(data["hairType"], data["porosity"], data["language"])
+    return jsonify({"advice": advice})
 
 
 @app.route("/api/chat", methods=["POST"])
@@ -34,7 +28,9 @@ def chat():
         data = request.json
         logging.debug(f"Received chat request: {data}")
         language = data.get("language", "en")  # Use "en" as default if language is not provided
-        response = chat_with_hair_expert(data["messages"], language)
+        hair_type = data.get("hairType", "")  # Get hair type from request
+        porosity = data.get("porosity", "")  # Get porosity from request
+        response = chat_with_hair_expert(data["messages"], hair_type, porosity, language)
         logging.debug(f"Chat response: {response}")
         return jsonify({"response": response})
     except Exception as e:
@@ -56,11 +52,5 @@ def product_analysis():
         return jsonify({"error": "An error occurred during product analysis"}), 500
 
 
-@app.route("/health", methods=["GET"])
-def health_check():
-    return jsonify({"status": "healthy"}), 200
-
-
 if __name__ == "__main__":
-    port = int(os.environ.get('PORT', 8080))
-    app.run(host='0.0.0.0', port=port, debug=True)
+    app.run(host="0.0.0.0", port=8080)
