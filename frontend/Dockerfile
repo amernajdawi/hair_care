@@ -17,7 +17,8 @@ COPY . .
 RUN npm install -g typescript
 
 # Set the environment variable for the API URL
-ENV REACT_APP_API_URL=http://backend:8000
+ENV REACT_APP_API_URL=https://backend2-508131517536.europe-west1.run.app
+# ENV REACT_APP_API_URL=http://backend:8000
 
 # Build the frontend
 RUN npm run build

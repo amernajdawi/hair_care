@@ -1,24 +1,57 @@
-<!-- Improved compatibility of back to top link: See: https://github.com/othneildrew/Best-README-Template/pull/73 -->
-<a name="readme-top"></a>
+# Hair Care
 
-<br />
-<div align="center">
-  <a href="https://github.com/Isa1asN/local-rag">
-    <div style="background-color: white;">
-      <img src="images/logoimg.png" alt="Logo">
-    </div>
-  </a>
+## Description
+A brief description of your project goes here. Explain what your project does and why it's useful.
 
-<h1 align="center">Local RAG: Langchain + Ollama + Streamlit </h1>
+## Table of Contents
+- [Installation](#installation)
+- [Usage](#usage)
+- [Features](#features)
+- [Technologies](#technologies)
+- [Contributing](#contributing)
+- [License](#license)
 
-  <p align="center">
-    Build your own RAG (chatPDF) and run it locally.
-  </p>
-  <img src="https://github.com/Isa1asN/local-rag/blob/master/images/screenshot.png?raw=true" alt="sshot">
+## Installation
+Provide step-by-step instructions on how to install your project. For example:
 
-</div>
+1. Clone the repository:
+   ```
+   git clone https://github.com/amernajdawi/hair_care.git
+   ```
+2. Navigate to the project directory:
+   ```
+   cd hair_care
+   ```
+3. Install dependencies:
+   ```
+   docker compose --ip
+   ```
 
-Setups:
-- Clone the repo by using  `git clone https://github.com/Mohamednajdawi/Rag_Chat.git`\
-- Open the repo in a container 
-- run the streamlit app using `poetry run streamlit run src/insights/app_2.py` on a separate terminal
+## Usage
+Explain how to use your project. Include code examples if applicable.
+
+## Features
+List the key features of your project.
+
+- Feature 1
+- Feature 2
+- Feature 3
+
+## Technologies
+List the technologies, frameworks, and libraries used in your project.
+
+- Frontend: React.js, Next.js
+- Backend: Python, FastAPI
+- Database: PostgreSQL
+- Containerization: Docker
+
+## Contributing
+Explain how others can contribute to your project. Include guidelines for submitting pull requests, reporting issues, etc.
+
+## License
+Specify the license under which your project is distributed.
+
+---
+
+Made with ❤️ by [Your Name]
+

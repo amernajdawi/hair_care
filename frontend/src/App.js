@@ -165,16 +165,16 @@ function App() {
       case 'Hair Type':
         return language === 'en' 
           ? <HairAdvice 
-              setSelectedHairType={(type) => handleHairTypeSelection(type, selectedPorosity, selectedScalpType, selectedDyed)}
-              setSelectedPorosity={(porosity) => handleHairTypeSelection(selectedHairType, porosity, selectedScalpType, selectedDyed)}
-              setSelectedScalpType={(scalpType) => handleHairTypeSelection(selectedHairType, selectedPorosity, scalpType, selectedDyed)}
-              setSelectedDyed={(dyed) => handleHairTypeSelection(selectedHairType, selectedPorosity, selectedScalpType, dyed)}
+              setSelectedHairType={setSelectedHairType} 
+              setSelectedPorosity={setSelectedPorosity}
+              setSelectedScalpType={setSelectedScalpType}
+              setSelectedDyed={setSelectedDyed}
             />
           : <HairAdviceAr 
-              setSelectedHairType={(type) => handleHairTypeSelection(type, selectedPorosity, selectedScalpType, selectedDyed)}
-              setSelectedPorosity={(porosity) => handleHairTypeSelection(selectedHairType, porosity, selectedScalpType, selectedDyed)}
-              setSelectedScalpType={(scalpType) => handleHairTypeSelection(selectedHairType, selectedPorosity, scalpType, selectedDyed)}
-              setSelectedDyed={(dyed) => handleHairTypeSelection(selectedHairType, selectedPorosity, selectedScalpType, dyed)}
+              setSelectedHairType={setSelectedHairType} 
+              setSelectedPorosity={setSelectedPorosity}
+              setSelectedScalpType={setSelectedScalpType}
+              setSelectedDyed={setSelectedDyed}
             />;
       case 'Care Advice':
         return language === 'en'
@@ -208,19 +208,6 @@ function App() {
         return language === 'en' ? <About /> : <AboutAr />;
       default:
         return <div>Page not found</div>;
-    }
-  };
-
-  const handleHairTypeSelection = (type, porosity, scalpType, dyed) => {
-    setSelectedHairType(type);
-    setSelectedPorosity(porosity);
-    setSelectedScalpType(scalpType);
-    setSelectedDyed(dyed);
-    
-    // Check if all selections are made, then automatically change the page
-    if (type && porosity && scalpType && dyed) {
-      setPage('Care Advice');
-      setShowError(false);
     }
   };
 
