@@ -147,8 +147,12 @@ def perform_ocr_and_analyze(image, hair_type, porosity, scalpType, dyed, languag
 
         prompt = f"""As a professional hair care expert, provide a detailed analysis of the following text extracted from a hair product label for {hair_type} hair with {porosity} porosity, {scalpType} scalp type, and {dyed} status:
 
+        hair care products details:
         {extracted_text}
-
+        
+        If the text is Not about hair care products details, respond with "Not Related" and ask the user to reupload a related image.
+        
+        else:
         Please provide a comprehensive analysis including:
         1. Product suitability for the given hair characteristics, explaining why it is or isn't suitable.
         2. Detailed list of beneficial ingredients, their effects, and why they're good for this hair type, porosity, scalp type, and dye status.
