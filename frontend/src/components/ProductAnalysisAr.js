@@ -1,5 +1,6 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import axios from 'axios';
+import { motion } from 'framer-motion';
 
 const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:8080';
 
@@ -70,7 +71,7 @@ const styles = {
   },
 };
 
-function ProductAnalysisAr({ selectedHairType, selectedPorosity }) {
+function ProductAnalysisAr({ selectedHairType, selectedPorosity, selectedScalpType, selectedDyed }) {
   const [file, setFile] = useState(null);
   const [analysis, setAnalysis] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -80,12 +81,8 @@ function ProductAnalysisAr({ selectedHairType, selectedPorosity }) {
       alert("الرجاء اختيار ملف أولاً.");
       return;
     }
-    if (!selectedHairType) {
-      alert("الرجاء اختيار نوع الشعر.");
-      return;
-    }
-    if (!selectedPorosity) {
-      alert("الرجاء اختيار مستوى المسامية في قسم نصائح الشعر.");
+    if (!selectedHairType || !selectedPorosity || !selectedScalpType || !selectedDyed) {
+      alert("الرجاء اختيار جميع خصائص الشعر في قسم نصائح الشعر.");
       return;
     }
 
@@ -94,7 +91,17 @@ function ProductAnalysisAr({ selectedHairType, selectedPorosity }) {
     formData.append('image', uploadedFile);
     formData.append('hairType', selectedHairType);
     formData.append('porosity', selectedPorosity);
+    formData.append('scalpType', selectedScalpType);
+    formData.append('dyed', selectedDyed);
     formData.append('language', 'ar');
+
+    console.log('إرسال البيانات إلى الخادم:', {
+      hairType: selectedHairType,
+      porosity: selectedPorosity,
+      scalpType: selectedScalpType,
+      dyed: selectedDyed,
+      language: 'ar'
+    });
 
     try {
       const response = await axios.post(`${API_URL}/api/product-analysis`, formData, {
@@ -107,11 +114,16 @@ function ProductAnalysisAr({ selectedHairType, selectedPorosity }) {
       }
     } catch (error) {
       console.error('خطأ في تحليل المنتج:', error);
-      alert('حدث خطأ أثناء تحليل المنتج. يرجى المحاولة مرة أخرى.');
+      if (error.response) {
+        console.error('بيانات الاستجابة:', error.response.data);
+        console.error('حالة الاستجابة:', error.response.status);
+        console.error('رؤوس الاستجابة:', error.response.headers);
+      }
+      alert(`حدث خطأ أثناء تحليل المنتج: ${error.message}. يرجى المحاولة مرة أخرى.`);
     } finally {
       setIsLoading(false);
     }
-  }, [selectedHairType, selectedPorosity]);
+  }, [selectedHairType, selectedPorosity, selectedScalpType, selectedDyed]);
 
   const handleFileChange = (e) => {
     const uploadedFile = e.target.files[0];
@@ -162,7 +174,14 @@ function ProductAnalysisAr({ selectedHairType, selectedPorosity }) {
   if (!selectedHairType || !selectedPorosity) {
     return (
       <div style={styles.container}>
-        <h2 style={styles.heading}>تحليل المنتج</h2>
+        <motion.h2
+          style={styles.heading}
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+        >
+          تحليل المنتج
+        </motion.h2>
         <p>الرجاء تحديد نوع الشعر والمسامية أولاً.</p>
       </div>
     );
@@ -170,7 +189,14 @@ function ProductAnalysisAr({ selectedHairType, selectedPorosity }) {
 
   return (
     <div style={styles.container}>
-      <h2 style={styles.heading}>تحليل المنتج</h2>
+      <motion.h2
+        style={styles.heading}
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+      >
+        تحليل المنتج
+      </motion.h2>
       <div>
         <input
           type="file"
@@ -180,6 +206,8 @@ function ProductAnalysisAr({ selectedHairType, selectedPorosity }) {
       </div>
       <div style={styles.hairType}>نوع الشعر المحدد: {selectedHairType}</div>
       <div style={styles.hairType}>المسامية المحددة: {selectedPorosity}</div>
+      <div style={styles.hairType}>نوع فروة الرأس المحدد: {selectedScalpType}</div>
+      <div style={styles.hairType}>حالة صبغ الشعر: {selectedDyed}</div>
       {isLoading && (
         <div style={styles.loadingText}>يرجى الانتظار... جاري تحليل المنتج الخاص بك ✨</div>
       )}

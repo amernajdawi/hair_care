@@ -13,8 +13,8 @@ RUN npm install
 # Copy the frontend source code
 COPY . .
 
-# Install react-lazy-load-image-component
-RUN npm install react-lazy-load-image-component
+# Install TypeScript globally
+RUN npm install -g typescript
 
 # Set the environment variable for the API URL
 ENV REACT_APP_API_URL=http://backend:8000

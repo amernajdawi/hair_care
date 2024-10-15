@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { motion } from 'framer-motion';
 
 const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000';
 
@@ -110,7 +111,7 @@ const additionalStyles = {
   },
 };
 
-function ChatAr({ selectedHairType, selectedPorosity }) {
+function ChatAr({ selectedHairType, selectedPorosity, selectedScalpType, selectedDyed }) {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -120,10 +121,10 @@ function ChatAr({ selectedHairType, selectedPorosity }) {
     setMessages([
       {
         role: "assistant",
-        content: `مرحبًا! أنا خبير العناية بالشعر الذكي. أرى أن نوع شعرك هو ${selectedHairType} مع مسامية ${selectedPorosity}. كيف يمكنني مساعدتك في العناية بشعرك اليوم؟`,
+        content: `مرحبًا! أنا خبير العناية بالشعر الذكي. أرى أن نوع شعرك هو ${selectedHairType} مع مسامية ${selectedPorosity}، وفروة رأس ${selectedScalpType}، وشعر ${selectedDyed}. كيف يمكنني مساعدتك في العناية بشعرك اليوم؟`,
       },
     ]);
-  }, [selectedHairType, selectedPorosity]);
+  }, [selectedHairType, selectedPorosity, selectedScalpType, selectedDyed]);
 
   const formatAssistantMessage = (content) => {
     const sections = content.split('\n\n');
@@ -149,19 +150,21 @@ function ChatAr({ selectedHairType, selectedPorosity }) {
     setIsLoading(true);
     setError(null);
 
-    console.log('Sending request with language:', 'ar');
+    console.log('إرسال طلب باللغة:', 'ar');
 
     try {
       const response = await axios.post(`${API_URL}/api/chat`, { 
         messages: newMessages,
         hairType: selectedHairType,
         porosity: selectedPorosity,
+        scalpType: selectedScalpType,
+        dyed: selectedDyed,
         language: 'ar'
       });
       let assistantMessage = response.data.response || '';
       setMessages([...newMessages, { role: 'assistant', content: assistantMessage }]);
     } catch (error) {
-      console.error('Error sending message:', error);
+      console.error('خطأ في إرسال الرسالة:', error);
       setError(`حدث خطأ: ${error.message}`);
     } finally {
       setIsLoading(false);
@@ -177,7 +180,14 @@ function ChatAr({ selectedHairType, selectedPorosity }) {
   return (
     <div style={styles.container}>
       <div style={styles.overlay}></div>
-      <h2 style={styles.heading}>الدردشة مع خبير الشعر</h2>
+      <motion.h2
+        style={styles.heading}
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+      >
+        الدردشة مع خبير الشعر
+      </motion.h2>
       <div style={styles.chatBox}>
         {messages.map((msg, index) => (
           <div key={index} style={{

@@ -1,5 +1,6 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import axios from 'axios';
+import { motion } from 'framer-motion';
 
 const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:8080';
 
@@ -67,7 +68,7 @@ const styles = {
   },
 };
 
-function ProductAnalysis({ selectedHairType, selectedPorosity }) {
+function ProductAnalysis({ selectedHairType, selectedPorosity, selectedScalpType, selectedDyed }) {
   const [file, setFile] = useState(null);
   const [analysis, setAnalysis] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -77,12 +78,8 @@ function ProductAnalysis({ selectedHairType, selectedPorosity }) {
       alert("Please select a file first.");
       return;
     }
-    if (!selectedHairType) {
-      alert("Please select your hair type.");
-      return;
-    }
-    if (!selectedPorosity) {
-      alert("Please select your hair porosity in the Hair Advice section.");
+    if (!selectedHairType || !selectedPorosity || !selectedScalpType || !selectedDyed) {
+      alert("Please select all hair characteristics in the Hair Advice section.");
       return;
     }
 
@@ -91,7 +88,17 @@ function ProductAnalysis({ selectedHairType, selectedPorosity }) {
     formData.append('image', uploadedFile);
     formData.append('hairType', selectedHairType);
     formData.append('porosity', selectedPorosity);
+    formData.append('scalpType', selectedScalpType);
+    formData.append('dyed', selectedDyed);
     formData.append('language', 'en');
+
+    console.log('Sending data to backend:', {
+      hairType: selectedHairType,
+      porosity: selectedPorosity,
+      scalpType: selectedScalpType,
+      dyed: selectedDyed,
+      language: 'en'
+    });
 
     try {
       const response = await axios.post(`${API_URL}/api/product-analysis`, formData, {
@@ -104,11 +111,16 @@ function ProductAnalysis({ selectedHairType, selectedPorosity }) {
       }
     } catch (error) {
       console.error('Error analyzing product:', error);
-      alert('An error occurred while analyzing the product. Please try again.');
+      if (error.response) {
+        console.error('Response data:', error.response.data);
+        console.error('Response status:', error.response.status);
+        console.error('Response headers:', error.response.headers);
+      }
+      alert(`An error occurred while analyzing the product: ${error.message}. Please try again.`);
     } finally {
       setIsLoading(false);
     }
-  }, [selectedHairType, selectedPorosity]);
+  }, [selectedHairType, selectedPorosity, selectedScalpType, selectedDyed]);
 
   const handleFileChange = (e) => {
     const uploadedFile = e.target.files[0];
@@ -151,7 +163,14 @@ function ProductAnalysis({ selectedHairType, selectedPorosity }) {
 
   return (
     <div style={styles.container}>
-      <h2 style={styles.heading}>Product Analysis</h2>
+      <motion.h2
+        style={styles.heading}
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+      >
+        Product Analysis
+      </motion.h2>
       <div>
         <input
           type="file"
@@ -161,6 +180,8 @@ function ProductAnalysis({ selectedHairType, selectedPorosity }) {
       </div>
       <div style={styles.hairType}>Selected Hair Type: {selectedHairType}</div>
       <div style={styles.hairType}>Selected Porosity: {selectedPorosity}</div>
+      <div style={styles.hairType}>Selected Scalp Type: {selectedScalpType}</div>
+      <div style={styles.hairType}>Hair Dyed Status: {selectedDyed}</div>
       {isLoading && (
         <div style={styles.loadingText}>Please wait... Analyzing your product ✨</div>
       )}

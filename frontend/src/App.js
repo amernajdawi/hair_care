@@ -7,6 +7,8 @@ import ChatAr from './components/ChatAr';
 import ProductAnalysisAr from './components/ProductAnalysisAr';
 import About from './components/About';
 import AboutAr from './components/AboutAr';
+import Home from './components/Home';
+import HomeAr from './components/HomeAr';
 
 const styles = {
   app: {
@@ -133,16 +135,18 @@ const styles = {
 };
 
 function App() {
-  const [page, setPage] = useState('Hair Type');
+  const [page, setPage] = useState('Home');
   const [selectedHairType, setSelectedHairType] = useState('');
   const [selectedPorosity, setSelectedPorosity] = useState('');
+  const [selectedScalpType, setSelectedScalpType] = useState('');
+  const [selectedDyed, setSelectedDyed] = useState('');
   const [showError, setShowError] = useState(false);
   const [language, setLanguage] = useState('en');
 
   console.log('App rendering', { page, selectedHairType, selectedPorosity, language });
 
   const handlePageChange = (newPage) => {
-    if (newPage === 'About' || newPage === 'Hair Type' || (selectedHairType && selectedPorosity)) {
+    if (newPage === 'About' || newPage === 'Hair Type' || newPage === 'Home' || (selectedHairType && selectedPorosity)) {
       setPage(newPage);
       setShowError(false);
     } else {
@@ -156,18 +160,50 @@ function App() {
 
   const renderComponent = () => {
     switch (page) {
+      case 'Home':
+        return language === 'en' ? <Home /> : <HomeAr />;
       case 'Hair Type':
         return language === 'en' 
-          ? <HairAdvice setSelectedHairType={setSelectedHairType} setSelectedPorosity={setSelectedPorosity} />
-          : <HairAdviceAr setSelectedHairType={setSelectedHairType} setSelectedPorosity={setSelectedPorosity} />;
-      case 'Care Advice':  // Changed from 'Chat' to 'Care Advice'
+          ? <HairAdvice 
+              setSelectedHairType={setSelectedHairType} 
+              setSelectedPorosity={setSelectedPorosity}
+              setSelectedScalpType={setSelectedScalpType}
+              setSelectedDyed={setSelectedDyed}
+            />
+          : <HairAdviceAr 
+              setSelectedHairType={setSelectedHairType} 
+              setSelectedPorosity={setSelectedPorosity}
+              setSelectedScalpType={setSelectedScalpType}
+              setSelectedDyed={setSelectedDyed}
+            />;
+      case 'Care Advice':
         return language === 'en'
-          ? <Chat selectedHairType={selectedHairType} selectedPorosity={selectedPorosity} />
-          : <ChatAr selectedHairType={selectedHairType} selectedPorosity={selectedPorosity} />;
+          ? <Chat 
+              selectedHairType={selectedHairType} 
+              selectedPorosity={selectedPorosity}
+              selectedScalpType={selectedScalpType}
+              selectedDyed={selectedDyed}
+            />
+          : <ChatAr 
+              selectedHairType={selectedHairType} 
+              selectedPorosity={selectedPorosity}
+              selectedScalpType={selectedScalpType}
+              selectedDyed={selectedDyed}
+            />;
       case 'Product Analysis':
         return language === 'en'
-          ? <ProductAnalysis selectedHairType={selectedHairType} selectedPorosity={selectedPorosity} />
-          : <ProductAnalysisAr selectedHairType={selectedHairType} selectedPorosity={selectedPorosity} />;
+          ? <ProductAnalysis 
+              selectedHairType={selectedHairType} 
+              selectedPorosity={selectedPorosity}
+              selectedScalpType={selectedScalpType}
+              selectedDyed={selectedDyed}
+            />
+          : <ProductAnalysisAr 
+              selectedHairType={selectedHairType} 
+              selectedPorosity={selectedPorosity}
+              selectedScalpType={selectedScalpType}
+              selectedDyed={selectedDyed}
+            />;
       case 'About':
         return language === 'en' ? <About /> : <AboutAr />;
       default:
@@ -197,7 +233,7 @@ function App() {
 
       <main style={styles.main}>
         <nav style={styles.nav}>
-          {['Hair Type', 'Care Advice', 'Product Analysis', 'About'].map((item) => (
+          {['Home', 'Hair Type', 'Care Advice', 'Product Analysis', 'About'].map((item) => (
             <button
               key={item}
               onClick={() => handlePageChange(item)}
@@ -206,6 +242,13 @@ function App() {
                 ...(page === item ? styles.activeNavButton : {}),
               }}
             >
+              {item === 'Home' && (
+                <img
+                  src="/images/Home.png"
+                  alt=""
+                  style={styles.navButtonIcon}
+                />
+              )}
               {item === 'Hair Type' && (
                 <img
                   src="/images/hair_Type.png"
@@ -234,14 +277,25 @@ function App() {
                   style={styles.navButtonIcon}
                 />
               )}
-              <span style={styles.navButtonText}>{language === 'en' ? item : (item === 'Hair Type' ? 'نوع الشعر' : item === 'Care Advice' ? 'نصائح العناية' : item === 'Product Analysis' ? 'تحليل المنتج' : 'About')}</span>
+              <span style={styles.navButtonText}>
+                {language === 'en' ? item : (
+                  item === 'Home' ? 'الرئيسية' :
+                  item === 'Hair Type' ? 'نوع الشعر' :
+                  item === 'Care Advice' ? 'نصائح العناية' :
+                  item === 'Product Analysis' ? 'تحليل المنتج' :
+                  'حول'
+                )}
+              </span>
             </button>
           ))}
         </nav>
         <div style={styles.content}>
           {showError && (
             <div style={styles.errorMessage}>
-              Please select your hair type and porosity before accessing other pages.
+              {language === 'en' 
+                ? 'Please select your hair type and porosity before accessing other pages.'
+                : 'الرجاء اختيار نوع شعرك ومساميته قبل الوصول إلى الصفحات الأخرى.'
+              }
             </div>
           )}
           {renderComponent()}
@@ -249,7 +303,10 @@ function App() {
       </main>
 
       <footer style={styles.footer}>
-        Made with ❤️ by Hair Care Expert | © 2024 All Rights Reserved
+        {language === 'en' 
+          ? 'Made with ❤️ by Hair Care Expert | © 2024 All Rights Reserved'
+          : 'صنع بـ ❤️ بواسطة خبير العناية بالشعر | © 2024 جميع الحقوق محفوظة'
+        }
       </footer>
     </div>
   );

@@ -2,6 +2,7 @@ import React, { useState, useCallback } from 'react';
 import axios from 'axios';
 import { LazyLoadImage } from 'react-lazy-load-image-component';
 import 'react-lazy-load-image-component/src/effects/blur.css';
+import { motion } from 'framer-motion';
 
 const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:8080';
 
@@ -153,21 +154,42 @@ const hairTypes = [
   
 
   const porosityTypes = [
-    { name: 'High Porosity', image: `${process.env.PUBLIC_URL}/images/high_porosity.png` },
-    { name: 'Normal Porosity', image: `${process.env.PUBLIC_URL}/images/normal_porosity.png` },
-    { name: 'Low Porosity', image: `${process.env.PUBLIC_URL}/images/low_porosity.png` },
+    { name: 'مسامية عالية', image: `${process.env.PUBLIC_URL}/images/high_porosity.png` },
+    { name: 'مسامية عادية', image: `${process.env.PUBLIC_URL}/images/normal_porosity.png` },
+    { name: 'مسامية منخفضة', image: `${process.env.PUBLIC_URL}/images/low_porosity.png` },
   ];
 
-function HairAdviceAr({ setSelectedHairType, setSelectedPorosity }) {
+const scalpTypes = [
+  { name: 'عادي' },
+  { name: 'جاف' },
+  { name: 'دهني' },
+  { name: 'حساس' },
+  { name: 'عرضة للقشرة' },
+  { name: 'مختلط' },
+];
+
+const dyedTypes = [
+  { name: 'طبيعي' },
+  { name: 'مصبوغ' },
+];
+
+const textVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: { opacity: 1, y: 0 },
+};
+
+function HairAdviceAr({ setSelectedHairType, setSelectedPorosity, setSelectedScalpType, setSelectedDyed }) {
   const [hairType, setHairType] = useState('');
   const [porosity, setPorosity] = useState('');
+  const [scalpType, setScalpType] = useState('');
+  const [dyed, setDyed] = useState('');
   const [advice, setAdvice] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
 
   const fetchHairAdvice = useCallback(async () => {
-    if (!hairType || !porosity) {
-      setError('الرجاء اختيار نوع الشعر ومساميته قبل التحليل.');
+    if (!hairType || !porosity || !scalpType || !dyed) {
+      setError('الرجاء اختيار جميع خصائص الشعر قبل التحليل.');
       return;
     }
 
@@ -175,38 +197,65 @@ function HairAdviceAr({ setSelectedHairType, setSelectedPorosity }) {
     setError('');
 
     try {
+      console.log('إرسال طلب مع البيانات:', { hairType, porosity, scalpType, dyed, language: 'ar' });
       const response = await axios.post(`${API_URL}/api/hair-advice`, { 
         hairType,
         porosity,
-        language: 'ar'  // Make sure this line is present
+        scalpType,
+        dyed,
+        language: 'ar'
       });
 
-      setAdvice(response.data.advice);
-      setSelectedHairType(hairType);
-      setSelectedPorosity(porosity);
+      console.log('تم استلام الرد:', response.data);
+
+      if (response.data && response.data.advice) {
+        setAdvice(response.data.advice);
+        setSelectedHairType(hairType);
+        setSelectedPorosity(porosity);
+        setSelectedScalpType(scalpType);
+        setSelectedDyed(dyed);
+      } else {
+        throw new Error('تنسيق استجابة غير متوقع');
+      }
     } catch (error) {
-      console.error('Error fetching hair advice:', error);
-      setError('حدث خطأ أثناء جلب النصيحة. يرجى المحاولة مرة أخرى.');
+      console.error('خطأ في جلب نصيحة الشعر:', error);
+      setError(`حدث خطأ أثناء جلب النصيحة: ${error.message}. يرجى المحاولة مرة أخرى.`);
     } finally {
       setIsLoading(false);
     }
-  }, [hairType, porosity, setSelectedHairType, setSelectedPorosity]);
+  }, [hairType, porosity, scalpType, dyed, setSelectedHairType, setSelectedPorosity, setSelectedScalpType, setSelectedDyed]);
 
   const handleHairTypeSelect = useCallback((selectedHairType) => {
     setHairType(selectedHairType);
     setSelectedHairType(selectedHairType);
-    if (selectedHairType && porosity) {
+    if (selectedHairType && porosity && scalpType && dyed) {
       fetchHairAdvice();
     }
-  }, [porosity, setSelectedHairType, fetchHairAdvice]);
+  }, [porosity, scalpType, dyed, setSelectedHairType, fetchHairAdvice]);
 
   const handlePorositySelect = useCallback((selectedPorosity) => {
     setPorosity(selectedPorosity);
     setSelectedPorosity(selectedPorosity);
-    if (hairType && selectedPorosity) {
+    if (hairType && selectedPorosity && scalpType && dyed) {
       fetchHairAdvice();
     }
-  }, [hairType, setSelectedPorosity, fetchHairAdvice]);
+  }, [hairType, scalpType, dyed, setSelectedPorosity, fetchHairAdvice]);
+
+  const handleScalpTypeSelect = useCallback((selectedScalpType) => {
+    setScalpType(selectedScalpType);
+    setSelectedScalpType(selectedScalpType);
+    if (hairType && porosity && selectedScalpType && dyed) {
+      fetchHairAdvice();
+    }
+  }, [hairType, porosity, dyed, setSelectedScalpType, fetchHairAdvice]);
+
+  const handleDyedSelect = useCallback((selectedDyed) => {
+    setDyed(selectedDyed);
+    setSelectedDyed(selectedDyed);
+    if (hairType && porosity && scalpType && selectedDyed) {
+      fetchHairAdvice();
+    }
+  }, [hairType, porosity, scalpType, setSelectedDyed, fetchHairAdvice]);
 
   const handleImageError = useCallback((e) => {
     console.error(`Failed to load image: ${e.target.src}`);
@@ -221,35 +270,49 @@ function HairAdviceAr({ setSelectedHairType, setSelectedPorosity }) {
     const sections = cleanAdvice.split('\n\n').filter(section => section.trim() !== '');
     
     return (
-      <div style={styles.advice}>
+      <motion.div
+        style={styles.advice}
+        initial="hidden"
+        animate="visible"
+        variants={{
+          visible: {
+            transition: {
+              staggerChildren: 0.1,
+            },
+          },
+        }}
+      >
         {sections.map((section, index) => {
           const [heading, ...content] = section.split(':');
           return (
-            <div key={index}>
-              <h3 style={styles.sectionHeading}>{heading.trim()}:</h3>
-              <div style={styles.adviceContent}>
+            <motion.div key={index} variants={textVariants}>
+              <motion.h3 style={styles.sectionHeading} variants={textVariants}>
+                {heading.trim()}:
+              </motion.h3>
+              <motion.div style={styles.adviceContent} variants={textVariants}>
                 {content.join(':').split('\n').map((line, lineIndex) => (
-                  <p key={lineIndex}>{line.trim()}</p>
+                  <motion.p key={lineIndex} variants={textVariants}>
+                    {line.trim()}
+                  </motion.p>
                 ))}
-              </div>
-            </div>
+              </motion.div>
+            </motion.div>
           );
         })}
-      </div>
+      </motion.div>
     );
   }, [advice]);
 
-  const handleAcceptAndGetAdvice = useCallback(() => {
-    if (hairType && porosity) {
-      fetchHairAdvice();
-    } else {
-      setError('الرجاء اختيار نوع الشعر ومساميته قبل الحصول على النصيحة.');
-    }
-  }, [hairType, porosity, fetchHairAdvice]);
-
   return (
     <div style={styles.container}>
-      <h2 style={styles.heading}>اختر نوع شعرك</h2>
+      <motion.h2
+        style={styles.heading}
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+      >
+        اختر نوع شعرك
+      </motion.h2>
       <div style={styles.buttonContainer}>
         {hairTypes.map((type) => (
           <button
@@ -272,7 +335,14 @@ function HairAdviceAr({ setSelectedHairType, setSelectedPorosity }) {
         ))}
       </div>
       
-      <h2 style={styles.heading}>اختر مسامية شعرك</h2>
+      <motion.h2
+        style={styles.heading}
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, delay: 0.2 }}
+      >
+        اختر مسامية شعرك
+      </motion.h2>
       <div style={styles.buttonContainer}>
         {porosityTypes.map((porosityType) => (
           <button
@@ -295,12 +365,69 @@ function HairAdviceAr({ setSelectedHairType, setSelectedPorosity }) {
         ))}
       </div>
       
-      <button 
-        onClick={handleAcceptAndGetAdvice}
-        style={styles.acceptButton}
+      <motion.h2
+        style={styles.heading}
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, delay: 0.4 }}
       >
-        قبول والحصول على النصيحة
-      </button>
+        اختر نوع فروة رأسك
+      </motion.h2>
+      <div style={styles.buttonContainer}>
+        {scalpTypes.map((type) => (
+          <button
+            key={type.name}
+            onClick={() => handleScalpTypeSelect(type.name)}
+            style={{
+              ...styles.circleButton,
+              ...(scalpType === type.name ? styles.selectedButton : {}),
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}
+          >
+            <span style={{
+              ...styles.buttonLabel,
+              fontSize: '14px',
+              fontWeight: 'bold',
+            }}>
+              {type.name}
+            </span>
+          </button>
+        ))}
+      </div>
+
+      <motion.h2
+        style={styles.heading}
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, delay: 0.6 }}
+      >
+        هل شعرك مصبوغ؟
+      </motion.h2>
+      <div style={styles.buttonContainer}>
+        {dyedTypes.map((dyedType) => (
+          <button
+            key={dyedType.name}
+            onClick={() => handleDyedSelect(dyedType.name)}
+            style={{
+              ...styles.circleButton,
+              ...(dyed === dyedType.name ? styles.selectedButton : {}),
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}
+          >
+            <span style={{
+              ...styles.buttonLabel,
+              fontSize: '16px', // Increased font size
+              fontWeight: 'bold',
+            }}>
+              {dyedType.name}
+            </span>
+          </button>
+        ))}
+      </div>
       
       {error && <div style={styles.errorMessage}>{error}</div>}
       

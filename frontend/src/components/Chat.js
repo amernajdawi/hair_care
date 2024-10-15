@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { motion } from 'framer-motion';
 
 const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000';
 
@@ -104,7 +105,7 @@ const additionalStyles = {
   },
 };
 
-function Chat({ selectedHairType, selectedPorosity }) {
+function Chat({ selectedHairType, selectedPorosity, selectedScalpType, selectedDyed }) {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -114,10 +115,10 @@ function Chat({ selectedHairType, selectedPorosity }) {
     setMessages([
       {
         role: "assistant",
-        content: `Hello! I'm your AI hair care expert. I see that your hair type is ${selectedHairType} with ${selectedPorosity} porosity. How can I help you with your hair today?`,
+        content: `Hello! I'm your AI hair care expert. I see that your hair type is ${selectedHairType} with ${selectedPorosity} porosity, ${selectedScalpType} scalp, and ${selectedDyed} hair. How can I help you with your hair today?`,
       },
     ]);
-  }, [selectedHairType, selectedPorosity]);
+  }, [selectedHairType, selectedPorosity, selectedScalpType, selectedDyed]);
 
   const formatAssistantMessage = (content) => {
     const sections = content.split('\n\n');
@@ -147,7 +148,10 @@ function Chat({ selectedHairType, selectedPorosity }) {
       const response = await axios.post(`${API_URL}/api/chat`, { 
         messages: newMessages,
         hairType: selectedHairType,
-        porosity: selectedPorosity
+        porosity: selectedPorosity,
+        scalpType: selectedScalpType,
+        dyed: selectedDyed,
+        language: 'en'
       }, {
         headers: {
           'Content-Type': 'application/json',
@@ -174,7 +178,14 @@ function Chat({ selectedHairType, selectedPorosity }) {
   return (
     <div style={styles.container}>
       <div style={styles.overlay}></div>
-      <h2 style={styles.heading}>Chat with Hair Expert</h2>
+      <motion.h2
+        style={styles.heading}
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+      >
+        Chat with Hair Expert
+      </motion.h2>
       <div style={styles.chatBox}>
         {messages.map((msg, index) => (
           <div key={index} style={{
